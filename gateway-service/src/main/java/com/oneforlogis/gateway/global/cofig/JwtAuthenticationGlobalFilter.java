@@ -102,15 +102,6 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
 					.header("X-User-Role", role))
 				.build();
 
-		// 응답 헤더에 추가 (beforeCommit 사용: WebFlux 비동기 체인 때문에 중복 호출되므로 사용)
-		ServerWebExchange finalExchange = exchange;
-		exchange.getResponse().beforeCommit(() -> {
-			finalExchange.getResponse().getHeaders().set("X-User-Id", userId);
-			finalExchange.getResponse().getHeaders().set("X-User-Name", userName);
-			finalExchange.getResponse().getHeaders().set("X-User-Role", role);
-			return Mono.empty();
-		});
-
 		// 토큰 검증 후 Authentication 객체를 만들어 SecurityContext에 저장 후 반환
 		List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 		UsernamePasswordAuthenticationToken auth =
