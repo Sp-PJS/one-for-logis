@@ -56,6 +56,9 @@
     - 인증, 인가
       - AccessToken은 클라이언트 Header에 저장되고, Refresh Token은 Redis 및 HttpOnly 쿠키에 저장되어 관리되며, `게이트웨이의 GlobalFilter`를 통한 인증, 검증을 통해 통합 인증 절차를 수행합니다.
     - 관리자 전용 조회 기능은 Redis 캐싱을 활용해 성능을 최적화하였습니다.
+    - Netty기반(비동기, 논블로킹)의 WebFlux & GlobalFilter와 Spring Security ThreadLocal(동기, 블로킹) 구조적인 차이로 인해 인증 정보가 유실되거나 오염되는 현상이 발생하여 GlobalFilter를 WebFilter로 변환하는 타입 브릿지를 통해 문제를 해결하였습니다.
+    Spring Security는 기본적으로 ROLE_ 접두사를 항상 붙인 상태로 권한체크를 내부적으로 진행하므로 해당 Authentication 인증 객체를 생성할 때, ROLE_ 접두사를 제거하여 인증 문제를 해결했습니다.
+    - 로깅이 중복으로 출력되는 현상을 ConcurrentHashMap에 로깅 정보를 저장하여 중복을 확인하여 1회만 로깅되도록 수정했습니다.
 
 - **허브**
     - 전국 물류망을 구성하는 핵심 거점 정보를 관리합니다. (허브의 이름, 주소, 위도/경도 등 기본 정보 등록·수정·삭제)
